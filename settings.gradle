@@ -1,0 +1,4 @@
+rootProject.name = 'demo'
+include 'api-service'
+include 'gain-service'
+include 'e2e-tests'
