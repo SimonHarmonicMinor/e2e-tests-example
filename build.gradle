@@ -1,0 +1,21 @@
+ext {
+    set('lombokVersion', '1.18.24')
+    set('testcontainersVersion', '1.17.2')
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    dependencies {
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+        implementation platform("org.testcontainers:testcontainers-bom:${testcontainersVersion}")
+        testImplementation "org.testcontainers:junit-jupiter"
+        testImplementation "org.testcontainers:rabbitmq"
+        testImplementation "org.mockito:mockito-core:3.+"
+        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    }
+
+}
