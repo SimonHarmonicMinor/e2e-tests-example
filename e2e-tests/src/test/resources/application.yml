@@ -1,0 +1,10 @@
+image:
+  gain-service: 'kirekov/gain-service:latest'
+  api-service: 'kirekov/api-service:latest'
+queue:
+  api: 'api_queue'
+  gain: 'gain_queue'
+
+api:
+  exposed-port: 38080
+  host: localhost
