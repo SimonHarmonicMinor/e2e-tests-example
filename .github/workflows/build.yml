@@ -83,5 +83,5 @@ jobs:
         run: |
           export IMAGE_GAIN_SERVICE=kirekov/api-service:${{needs.docker-images.outputs.image_tag}}
           export IMAGE_API_SERVICE=kirekov/gain-service:${{needs.docker-images.outputs.image_tag}}
-          ls
+          cd /app
           /app/gradlew :e2e-tests:test
