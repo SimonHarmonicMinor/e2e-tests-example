@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.lifecycle.Startables;
@@ -17,6 +18,7 @@ import org.testcontainers.utility.DockerImageName;
 
 @ContextConfiguration(initializers = Initializer.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class FunctionalTestSuite {
 
   private static final RabbitMQContainer RABBIT =
