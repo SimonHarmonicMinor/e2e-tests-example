@@ -53,19 +53,18 @@ jobs:
       - name: Build and push API-Service
         uses: docker/build-push-action@v3
         with:
-          context: ./api-service
+          context: "{{defaultContext}}:api-service"
           push: true
           tags: kirekov/api-service:${{ env.IMAGE_TAG }}
       - name: Build and push Gain-Service
         uses: docker/build-push-action@v3
         with:
-          context: ./gain-service
+          context: "{{defaultContext}}:gain-service"
           push: true
           tags: kirekov/gain-service:${{ env.IMAGE_TAG }}
       - name: Build and push Gain-Service
         uses: docker/build-push-action@v3
         with:
-          context: .
           push: true
           tags: kirekov/e2e-tests:${{ env.IMAGE_TAG }}
 
