@@ -86,7 +86,7 @@ jobs:
       - name: Run E2E-tests with Gradle
         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
         env:
-          IMAGE_GAIN_SERVICE: kirekov/api-service:${{needs.docker-images.outputs.image_tag}}
-          IMAGE_API_SERVICE: kirekov/gain-service:${{needs.docker-images.outputs.image_tag}}
+          IMAGE_API_SERVICE: kirekov/api-service:${{needs.docker-images.outputs.image_tag}}
+          IMAGE_GAIN_SERVICE: kirekov/gain-service:${{needs.docker-images.outputs.image_tag}}
         with:
           arguments: :e2e-tests:test
