@@ -53,19 +53,19 @@ jobs:
       - name: Build and push E2E-tests
         uses: docker/build-push-action@v3
         with:
-          file: "{{context}}/Dockerfile_e2e_tests"
+          file: "./Dockerfile_e2e_tests"
           push: true
           tags: kirekov/e2e-tests:${{ env.IMAGE_TAG }}
       - name: Build and push API-Service
         uses: docker/build-push-action@v3
         with:
-          file: "{{context}}/Dockerfile_api_service"
+          file: "./Dockerfile_api_service"
           push: true
           tags: kirekov/api-service:${{ env.IMAGE_TAG }}
       - name: Build and push Gain-Service
         uses: docker/build-push-action@v3
         with:
-          file: "{{context}}/Dockerfile_gain_service"
+          file: "./Dockerfile_gain_service"
           push: true
           tags: kirekov/gain-service:${{ env.IMAGE_TAG }}
 
