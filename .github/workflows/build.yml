@@ -10,7 +10,6 @@ permissions:
   contents: read
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +23,6 @@ jobs:
         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
         with:
           arguments: gain-service:build api-service:build
-
   docker-images:
     needs:
       - build
@@ -68,7 +66,6 @@ jobs:
           file: "./Dockerfile_gain_service"
           push: true
           tags: kirekov/gain-service:${{ env.IMAGE_TAG }}
-
   e2e-tests:
     needs: docker-images
     runs-on: ubuntu-latest
