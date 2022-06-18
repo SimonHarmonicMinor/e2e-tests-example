@@ -10,13 +10,6 @@ permissions:
   contents: read
 
 jobs:
-  build-number:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate build number
-        uses: einaregilsson/build-number@v3
-        with:
-          token: ${{secrets.github_token}}
 
   build:
     runs-on: ubuntu-latest
@@ -27,6 +20,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Generate build number
+        id: buildnumber
+        uses: einaregilsson/build-number@v3
+        with:
+          token: ${{secrets.github_token}}
       - name: Build with Gradle
         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
         with:
@@ -35,7 +33,6 @@ jobs:
   docker-images:
     needs:
       - build
-      - build-number
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
