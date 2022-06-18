@@ -48,10 +48,12 @@ jobs:
         run: |
           if [[ $BRANCH == 'master' ]]; then
               echo "IMAGE_TAG=latest" >> "$GITHUB_ENV"
+              export IMAGE_TAG=latest
           else
               echo "IMAGE_TAG=dev-${{ github.run_number }}" >> "$GITHUB_ENV"
+              export IMAGE_TAG=dev-${{ github.run_number }}
           fi
-          echo "::set-output name=image_tag::${{ env.IMAGE_TAG }}"
+          echo "::set-output name=image_tag::$IMAGE_TAG"
       - name: Build and push E2E-tests
         uses: docker/build-push-action@v3
         with:
