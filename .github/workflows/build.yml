@@ -66,14 +66,3 @@ jobs:
           file: "./Dockerfile_gain_service"
           push: true
           tags: kirekov/gain-service:${{ env.IMAGE_TAG }}
-  e2e-tests:
-    needs: docker-images
-    runs-on: ubuntu-latest
-    container:
-      image: kirekov/e2e-tests:${{ env.IMAGE_TAG }}
-      env:
-        IMAGE_GAIN_SERVICE: kirekov/gain-service:${{ env.IMAGE_TAG }}
-        IMAGE_API_SERVICE: kirekov/api-service:${{ env.IMAGE_TAG }}
-    steps:
-      - name: Run E2E-tests
-        run: /app/gradlew :e2e-tests:test
