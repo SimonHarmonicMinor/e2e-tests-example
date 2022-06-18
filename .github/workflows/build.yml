@@ -50,6 +50,11 @@ jobs:
           else
               echo "IMAGE_TAG=dev-${{ github.run_number }}" >> "$GITHUB_ENV"
           fi
+      - name: Build and push E2E-tests
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: kirekov/e2e-tests:${{ env.IMAGE_TAG }}
       - name: Build and push API-Service
         uses: docker/build-push-action@v3
         with:
@@ -62,11 +67,6 @@ jobs:
           context: "{{defaultContext}}:gain-service"
           push: true
           tags: kirekov/gain-service:${{ env.IMAGE_TAG }}
-      - name: Build and push Gain-Service
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: kirekov/e2e-tests:${{ env.IMAGE_TAG }}
 
   e2e-tests:
     needs: docker-images
