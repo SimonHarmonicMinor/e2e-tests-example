@@ -20,11 +20,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Generate build number
-        id: buildnumber
-        uses: einaregilsson/build-number@v3
-        with:
-          token: ${{secrets.github_token}}
       - name: Build with Gradle
         uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
         with:
@@ -53,7 +48,7 @@ jobs:
           if [[ $BRANCH == 'master' ]]; then
               echo "IMAGE_TAG=latest" >> "$GITHUB_ENV"
           else
-              echo "IMAGE_TAG=dev-${{ steps.buildnumber.outputs.build_number }}" >> "$GITHUB_ENV"
+              echo "IMAGE_TAG=dev-${{ github.run_number }}" >> "$GITHUB_ENV"
           fi
       - name: Build and push API-Service
         uses: docker/build-push-action@v3
