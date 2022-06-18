@@ -116,7 +116,8 @@ public class E2ESuite {
       );
       API_SERVICE = createApiServiceContainer(environment, apiExposedPort);
       GAIN_SERVICE = createGainServiceContainer(environment);
-      Startables.deepStart(API_SERVICE, GAIN_SERVICE).join();
+      Startables.deepStart(API_SERVICE).join();
+      Startables.deepStart(GAIN_SERVICE).join();
 
       environment.getPropertySources().addFirst(
           new MapPropertySource(
