@@ -64,10 +64,10 @@
     <appender-ref ref="FILE_GAIN_SERVICE"/>
   </logger>
 
-  <logger name="org.testcontainers" level="INFO">
+  <logger name="org.testcontainers" level="DEBUG">
     <appender-ref ref="FILE_TESTCONTAINERS"/>
   </logger>
-  <logger name="com.github.dockerjava" level="INFO">
+  <logger name="com.github.dockerjava" level="DEBUG">
     <appender-ref ref="FILE_TESTCONTAINERS"/>
   </logger>
 </configuration>
