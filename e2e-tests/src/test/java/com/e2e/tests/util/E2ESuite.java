@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,7 @@ public class E2ESuite {
     return result;
   }
 
+  @Slf4j
   static class Initializer implements
       ApplicationContextInitializer<ConfigurableApplicationContext> {
 
@@ -116,8 +118,14 @@ public class E2ESuite {
       );
       API_SERVICE = createApiServiceContainer(environment, apiExposedPort);
       GAIN_SERVICE = createGainServiceContainer(environment);
+
+      log.info("Starting API-Service");
       Startables.deepStart(API_SERVICE).join();
+      log.info("API-Service started");
+
+      log.info("Starting Gain-Service");
       Startables.deepStart(GAIN_SERVICE).join();
+      log.info("Gain-Service started");
 
       environment.getPropertySources().addFirst(
           new MapPropertySource(
