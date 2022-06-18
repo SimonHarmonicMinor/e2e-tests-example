@@ -24,7 +24,13 @@ public class TestRabbitListener {
 
   private final Map<QueueType, List<String>> messages = new ConcurrentHashMap<>();
 
-  @RabbitListener(queues = {"${queue.api}", "${queue.gain}"})
+  public void resetMessages() {
+    for (QueueType value : QueueType.values()) {
+      messages.computeIfAbsent(value, k -> new CopyOnWriteArrayList<>());
+    }
+  }
+
+  @RabbitListener(queues = "${queue.gain}")
   public void listenTopics(Message message) {
     final var queue = message.getMessageProperties().getConsumerQueue();
     final var body = new String(message.getBody(), UTF_8);

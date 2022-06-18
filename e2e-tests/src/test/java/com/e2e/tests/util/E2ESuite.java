@@ -29,6 +29,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.lifecycle.Startables;
 
 @ContextConfiguration(initializers = Initializer.class)
@@ -64,7 +65,7 @@ public class E2ESuite {
   @BeforeEach
   void beforeEach() {
     redis.cleanRedis();
-    testRabbitListener.getMessages().clear();
+    testRabbitListener.resetMessages();
   }
 
   protected List<Map<String, ?>> getGainQueueMessages() {
@@ -102,7 +103,8 @@ public class E2ESuite {
                   environment.getProperty("queue.gain", String.class),
                   "Gain Queue is null"
               )
-          );
+          )
+          .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("Rabbit")));
 
       Startables.deepStart(REDIS, RABBIT).join();
       final var apiExposedPort = requireNonNull(
@@ -163,6 +165,10 @@ public class E2ESuite {
                       ))
               )
           )
+          .waitingFor(
+              Wait.forHttp("/actuator/health")
+                  .forStatusCode(200)
+          )
           .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("API-Service")));
     }
 
@@ -195,6 +201,10 @@ public class E2ESuite {
           .withEnv("SPRING_REDIS_URL", "redis://redis:6379")
           .withEnv("QUEUE_INPUT_NAME", apiQueue)
           .withEnv("QUEUE_OUTPUT_NAME", gainQueue)
+          .waitingFor(
+              Wait.forHttp("/actuator/health")
+                  .forStatusCode(200)
+          )
           .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("Gain-Service")));
     }
   }

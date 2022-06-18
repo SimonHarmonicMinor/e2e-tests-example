@@ -5,13 +5,15 @@ import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 
 import com.e2e.tests.util.E2ESuite;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+@Slf4j
 class GainTest extends E2ESuite {
 
   @Test
   void shouldGainMessage() {
-    rest.get(
+    rest.post(
         "/api/message",
         Map.of(
             "some_key", "some_value",
@@ -29,7 +31,7 @@ class GainTest extends E2ESuite {
             "msisdn", "msisdn-value"
         )));
 
-    rest.get(
+    rest.post(
         "/api/message",
         Map.of(
             "another_key", "another_value",

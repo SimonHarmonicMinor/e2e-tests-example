@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -14,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class Listener {
 
   private final RabbitTemplate rabbitTemplate;
@@ -38,6 +40,7 @@ public class Listener {
   @SneakyThrows
   @SuppressWarnings("unchecked")
   public void listenMessage(String message) {
+    log.info("Message accepted message='{}'", message);
     Map<String, Object> messageMap = new HashMap<String, Object>(
         objectMapper.readValue(message, Map.class)
     );
@@ -54,5 +57,6 @@ public class Listener {
     rabbitTemplate.send(outputQueue, new Message(
         objectMapper.writeValueAsString(messageMap).getBytes(UTF_8)
     ));
+    log.info("Message sent to RabbitMQ {topic='{}', message='{}'}", outputQueue, messageMap);
   }
 }
