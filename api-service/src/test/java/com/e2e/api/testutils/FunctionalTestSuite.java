@@ -5,7 +5,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import com.e2e.api.testutils.FunctionalTestSuite.Initializer;
 import java.util.Map;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
