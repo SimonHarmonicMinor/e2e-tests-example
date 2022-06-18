@@ -1,0 +1,91 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-number:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate build number
+        uses: einaregilsson/build-number@v3
+        with:
+          token: ${{secrets.github_token}}
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
+        with:
+          arguments: gain-service:build api-service:build
+
+  docker-images:
+    needs:
+      - build
+      - build-number
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set env BRANCH
+        run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
+      - name: Define images tags
+        run: |
+          if [[ $BRANCH == 'master' ]]; then
+              echo "IMAGE_TAG=latest" >> "$GITHUB_ENV"
+          else
+              echo "IMAGE_TAG=dev-${{ steps.buildnumber.outputs.build_number }}" >> "$GITHUB_ENV"
+          fi
+      - name: Build and push API-Service
+        uses: docker/build-push-action@v3
+        with:
+          context: ./api-service
+          push: true
+          tags: kirekov/api-service:${{ env.IMAGE_TAG }}
+      - name: Build and push Gain-Service
+        uses: docker/build-push-action@v3
+        with:
+          context: ./gain-service
+          push: true
+          tags: kirekov/gain-service:${{ env.IMAGE_TAG }}
+      - name: Build and push Gain-Service
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: kirekov/e2e-tests:${{ env.IMAGE_TAG }}
+
+  e2e-tests:
+    needs: docker-images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: addnab/docker-run-action@v3
+        env:
+          IMAGE_GAIN_SERVICE: kirekov/gain-service:${{ env.IMAGE_TAG }}
+          IMAGE_API_SERVICE: kirekov/api-service:${{ env.IMAGE_TAG }}
+        with:
+          image: kirekov/e2e-tests:${{ env.IMAGE_TAG }}
