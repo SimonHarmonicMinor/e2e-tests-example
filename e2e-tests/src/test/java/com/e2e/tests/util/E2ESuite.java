@@ -30,7 +30,10 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.images.AbstractImagePullPolicy;
+import org.testcontainers.images.ImageData;
 import org.testcontainers.lifecycle.Startables;
+import org.testcontainers.utility.DockerImageName;
 
 @ContextConfiguration(initializers = Initializer.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -169,6 +172,13 @@ public class E2ESuite {
               Wait.forHttp("/actuator/health")
                   .forStatusCode(200)
           )
+          .withImagePullPolicy(new AbstractImagePullPolicy() {
+            @Override
+            protected boolean shouldPullCached(DockerImageName imageName,
+                ImageData localImageData) {
+              return true;
+            }
+          })
           .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("API-Service")));
     }
 
@@ -205,6 +215,13 @@ public class E2ESuite {
               Wait.forHttp("/actuator/health")
                   .forStatusCode(200)
           )
+          .withImagePullPolicy(new AbstractImagePullPolicy() {
+            @Override
+            protected boolean shouldPullCached(DockerImageName imageName,
+                ImageData localImageData) {
+              return true;
+            }
+          })
           .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("Gain-Service")));
     }
   }
