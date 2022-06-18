@@ -75,7 +75,7 @@ jobs:
       - docker-images
     runs-on: ubuntu-latest
     container:
-      image: kirekov/e2e-tests:${{ env.IMAGE_TAG }}
+      image: kirekov/e2e-tests:${{needs.docker-images.outputs.image_tag}}
     steps:
       - name: Run E2E-tests
         run: |
