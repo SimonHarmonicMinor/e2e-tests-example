@@ -1,4 +1,4 @@
-package com.e2e.api;
+package com.e2e.gain;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

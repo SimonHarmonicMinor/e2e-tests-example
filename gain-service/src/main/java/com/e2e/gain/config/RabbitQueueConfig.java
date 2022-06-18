@@ -1,4 +1,4 @@
-package com.e2e.api.config;
+package com.e2e.gain.config;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.beans.factory.annotation.Value;

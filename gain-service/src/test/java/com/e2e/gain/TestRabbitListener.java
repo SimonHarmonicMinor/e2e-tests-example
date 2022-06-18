@@ -1,4 +1,4 @@
-package com.e2e.api;
+package com.e2e.gain;
 
 import java.util.function.Consumer;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

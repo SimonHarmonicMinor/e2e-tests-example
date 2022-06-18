@@ -1,4 +1,4 @@
-package com.e2e.api;
+package com.e2e.gain;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
