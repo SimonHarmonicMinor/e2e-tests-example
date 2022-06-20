@@ -1,4 +1,4 @@
-package com.e2e.api;
+package com.e2e.gain;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import com.e2e.api.testutils.FunctionalTestSuite;
+import com.e2e.gain.testutils.FunctionalTestSuite;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.function.Consumer;

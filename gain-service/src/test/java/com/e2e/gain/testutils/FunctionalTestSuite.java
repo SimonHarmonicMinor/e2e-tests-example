@@ -1,9 +1,9 @@
-package com.e2e.api.testutils;
+package com.e2e.gain.testutils;
 
 import static java.lang.String.format;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-import com.e2e.api.testutils.FunctionalTestSuite.Initializer;
+import com.e2e.gain.testutils.FunctionalTestSuite.Initializer;
 import java.util.Map;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
