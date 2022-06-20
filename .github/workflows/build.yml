@@ -71,20 +71,15 @@ jobs:
     needs:
       - build-dev-images
     runs-on: ubuntu-latest
+    container:
+      image: kirekov/e2e-tests:${{needs.docker-images.outputs.image_tag}}
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Run E2E-tests with Gradle
-        uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
-        env:
-          IMAGE_API_SERVICE: kirekov/api-service:${{needs.docker-images.outputs.image_tag}}
-          IMAGE_GAIN_SERVICE: kirekov/gain-service:${{needs.docker-images.outputs.image_tag}}
-        with:
-          arguments: :e2e-tests:test
+      - name: Run E2E-tests
+        run: |
+          cd /app
+          ./gradlew :e2e-tests:test
   build-prod-images:
     needs:
       - e2e-tests
