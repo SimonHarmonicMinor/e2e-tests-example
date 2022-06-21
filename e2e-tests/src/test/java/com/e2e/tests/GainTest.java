@@ -5,10 +5,8 @@ import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 
 import com.e2e.tests.util.E2ESuite;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
-@Slf4j
 class GainTest extends E2ESuite {
 
   @Test
@@ -22,9 +20,7 @@ class GainTest extends E2ESuite {
         ),
         Void.class
     );
-
-    await()
-        .atMost(FIVE_SECONDS)
+    await().atMost(FIVE_SECONDS)
         .until(() -> getGainQueueMessages().contains(Map.of(
             "some_key", "some_value",
             "cookie", "cookie-value",
@@ -39,9 +35,7 @@ class GainTest extends E2ESuite {
         ),
         Void.class
     );
-
-    await()
-        .atMost(FIVE_SECONDS)
+    await().atMost(FIVE_SECONDS)
         .until(() -> getGainQueueMessages().contains(Map.of(
             "another_key", "another_value",
             "cookie", "cookie-value",
