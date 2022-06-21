@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.test.context.ContextConfiguration;
@@ -46,12 +46,7 @@ import org.testcontainers.utility.DockerImageName;
 public class E2ESuite {
 
   private static final Network SHARED_NETWORK = Network.newNetwork();
-  private static final GenericContainer<?> REDIS =
-      new GenericContainer<>("redis:5.0.14-alpine3.15")
-          .withExposedPorts(6379)
-          .withNetwork(SHARED_NETWORK)
-          .withNetworkAliases("redis")
-          .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("Redis")));
+  private static GenericContainer<?> REDIS;
   private static RabbitMQContainer RABBIT;
 
   private static GenericContainer<?> API_SERVICE;
@@ -86,17 +81,31 @@ public class E2ESuite {
     return result;
   }
 
-  @Slf4j
   static class Initializer implements
       ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     @Override
     public void initialize(ConfigurableApplicationContext context) {
       final var environment = context.getEnvironment();
-      RABBIT = new RabbitMQContainer("rabbitmq:3.7.25-management-alpine")
+      REDIS = createRedisContainer();
+      RABBIT = createRabbitMQContainer(environment);
+
+      Startables.deepStart(REDIS, RABBIT).join();
+      final var apiExposedPort = requireNonNull(
+          environment.getProperty("api.exposed-port", Integer.class),
+          "API Exposed Port is null"
+      );
+      API_SERVICE = createApiServiceContainer(environment, apiExposedPort);
+      GAIN_SERVICE = createGainServiceContainer(environment);
+
+      Startables.deepStart(API_SERVICE, GAIN_SERVICE).join();
+      setPropertiesForConnections(environment);
+    }
+
+    private RabbitMQContainer createRabbitMQContainer(Environment environment) {
+      return new RabbitMQContainer("rabbitmq:3.7.25-management-alpine")
           .withNetwork(SHARED_NETWORK)
           .withNetworkAliases("rabbit")
-          .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("Rabbit")))
           .withQueue(
               requireNonNull(
                   environment.getProperty("queue.api", String.class),
@@ -110,37 +119,14 @@ public class E2ESuite {
               )
           )
           .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("Rabbit")));
+    }
 
-      Startables.deepStart(REDIS, RABBIT).join();
-      final var apiExposedPort = requireNonNull(
-          environment.getProperty("api.exposed-port", Integer.class),
-          "API Exposed Port is null"
-      );
-      API_SERVICE = createApiServiceContainer(environment, apiExposedPort);
-      GAIN_SERVICE = createGainServiceContainer(environment);
-
-      log.info("Starting API-Service");
-      Startables.deepStart(API_SERVICE).join();
-      log.info("API-Service started");
-
-      log.info("Starting Gain-Service");
-      Startables.deepStart(GAIN_SERVICE).join();
-      log.info("Gain-Service started");
-
-      environment.getPropertySources().addFirst(
-          new MapPropertySource(
-              "testcontainers",
-              Map.of(
-                  "spring.rabbitmq.addresses", RABBIT.getAmqpUrl(),
-                  "spring.redis.url", format(
-                      "redis://%s:%s",
-                      REDIS.getHost(),
-                      REDIS.getMappedPort(6379)
-                  ),
-                  "api.host", API_SERVICE.getHost()
-              )
-          )
-      );
+    private GenericContainer<?> createRedisContainer() {
+      return new GenericContainer<>("redis:5.0.14-alpine3.15")
+          .withExposedPorts(6379)
+          .withNetwork(SHARED_NETWORK)
+          .withNetworkAliases("redis")
+          .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("Redis")));
     }
 
     private GenericContainer<?> createApiServiceContainer(
@@ -232,6 +218,23 @@ public class E2ESuite {
             }
           })
           .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("Gain-Service")));
+    }
+
+    private void setPropertiesForConnections(ConfigurableEnvironment environment) {
+      environment.getPropertySources().addFirst(
+          new MapPropertySource(
+              "testcontainers",
+              Map.of(
+                  "spring.rabbitmq.addresses", RABBIT.getAmqpUrl(),
+                  "spring.redis.url", format(
+                      "redis://%s:%s",
+                      REDIS.getHost(),
+                      REDIS.getMappedPort(6379)
+                  ),
+                  "api.host", API_SERVICE.getHost()
+              )
+          )
+      );
     }
   }
 }
