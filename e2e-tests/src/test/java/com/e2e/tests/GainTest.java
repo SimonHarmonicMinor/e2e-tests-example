@@ -16,7 +16,7 @@ class GainTest extends E2ESuite {
         Map.of(
             "some_key", "some_value",
             "cookie", "cookie-value",
-            "msisdn", "msisdn-value"
+            "msisdn", "88005553535"
         ),
         Void.class
     );
@@ -24,7 +24,7 @@ class GainTest extends E2ESuite {
         .until(() -> getGainQueueMessages().contains(Map.of(
             "some_key", "some_value",
             "cookie", "cookie-value",
-            "msisdn", "msisdn-value"
+            "msisdn", "88005553535"
         )));
 
     rest.post(
@@ -39,7 +39,7 @@ class GainTest extends E2ESuite {
         .until(() -> getGainQueueMessages().contains(Map.of(
             "another_key", "another_value",
             "cookie", "cookie-value",
-            "msisdn", "msisdn-value"
+            "msisdn", "88005553535"
         )));
   }
 }
